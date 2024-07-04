@@ -299,3 +299,20 @@ public:
 };
 
 #endif // !__STACK_FRAME_H__
+
+/*
+localvariableArray lva;
+
+// Đặt một giá trị mới tại chỉ số 0
+lva.setNewValue(42.0, FLOAT, 0);
+
+// Kiểm tra xem chỉ số 0 có được sử dụng không
+bool isOccupied = lva.checkOccupiedIndex(0); // trả về true
+
+// Lấy giá trị tại chỉ số 0
+float value = lva.getValue(0); // trả về 42.0
+
+// Loại bỏ giá trị tại chỉ số 0
+float removedValue = lva.removeDataValue(0); // trả về 42.0 và đánh dấu chỉ số 0 là không sử dụng
+
+*/
