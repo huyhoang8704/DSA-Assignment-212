@@ -33,17 +33,11 @@ public:
         ~SLinkedList() { clear(); }
 
         void add(const T& e);
-        void add(int index, const T& e);
         int size() const;
         T get(int index) const;
-        void set(int index, const T& e);
-        bool empty() const;
-        int indexOf(const T& item) const;
-        bool contains(const T& item) const;
-        T removeAt(int index);
-        bool removeItem(const T& item);
+        bool isEmpty() const;
+        void removeAt(int index);
         void clear();
-        string toString() const;
 
         class Node {
         private:
@@ -130,15 +124,88 @@ public:
 template <class T>
 void StackFrame::SLinkedList<T>::add(const T& e) {
     // Chia làm 2 TH rỗng và không rỗng
-    if(this->empty()){  head = tail = new Node(e,nullptr);}
+    if(this->empty()){  this->head = this->tail = new Node(e,nullptr);}
 
     else{
         Node* tmp = new Node(e,nullptr);
-      
-        tail->next = tmp;
-        
-        tail = tmp;
+        this->tail->next = tmp;
+        this->tail = tmp;
         
     }
-    count++;
+    this->count++;
 }
+
+
+
+template <class T>
+int StackFrame::SLinkedList<T>::size() const {
+    return this->count;
+}
+
+template <class T>
+T StackFrame::SLinkedList<T>::get(int index) const {
+    if(index <0 || index > size()) throw("The index is out of range!");
+    if(size() == 0) throw("List is empty");
+    else{
+        Node* temp = this->head;
+        for (int i = 0; i < index; i++) 
+        temp = temp->next;
+        return temp->data; 
+    }
+}
+
+
+template <class T>
+bool StackFrame::SLinkedList<T>::isEmpty() const {
+    return size() == 0;
+}
+
+template <class T>
+void StackFrame::SLinkedList<T>::clear() {
+    while(size() != 0){
+        removeAt(0);
+    }
+}
+
+template <class T>
+void StackFrame::SLinkedList<T>::removeAt(int index) {
+    if(index <0 || index >size()) {
+        throw("The index is out of range!");
+    } 
+    if(isEmpty()) throw("List is empty");
+
+    Node* temp = this->head;
+
+    if(index == 0 && size()> 1){
+        this->head = temp->next;
+        delete temp;
+    }
+
+
+    else if(index == size()-1){
+        for(int i = 0; i < size()-2; i ++){
+            temp = temp->next;
+        }
+        delete this->tail;
+        this->tail = temp;
+        temp->next = NULL;
+    }
+
+    else if(index > 0 && index < size()-1){
+        for(int i = 0; i < index - 1; i++){
+            temp = temp->next;
+        }
+        Node* temp2 = temp->next;
+        temp->next = temp2->next;
+        delete temp2;
+        temp2 = NULL;
+    }
+
+    else if(index == 0 && size() == 1){
+        delete this->head;
+        this->head = NULL;
+        this->tail = NULL;
+    }
+    this->count--;   
+}
+
