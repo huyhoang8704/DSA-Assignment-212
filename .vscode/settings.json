@@ -11,6 +11,7 @@
         "iostream": "cpp",
         "*.tcc": "cpp",
         "fstream": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "typeinfo": "cpp"
     }
 }

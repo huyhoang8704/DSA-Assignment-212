@@ -51,10 +51,8 @@ bool expWithValue(string str){
 void iadd (StackFrame::myStack<frame>& stack  , fstream& file , int lineNumber){
     if(stack.stackSize() > 1){
         frame a,b;
-        a = stack.top();
-        stack.pop();
-        b = stack.top();
-        stack.pop();
+        a = stack.top(); stack.pop();
+        b = stack.top(); stack.pop();
 
         if((a.type == INTEGER) && (b.type == INTEGER)){
             frame c;
@@ -79,22 +77,12 @@ void iadd (StackFrame::myStack<frame>& stack  , fstream& file , int lineNumber){
 void fadd (StackFrame::myStack<frame>& stack ,  fstream& file , int lineNumber){
     if(stack.stackSize() > 1){
         frame a,b;
-        a = stack.top();
-        stack.pop();
-        b = stack.top();
-        stack.pop();
+        a = stack.top(); stack.pop();
+        b = stack.top(); stack.pop();
 
-        if(a.type == FLOAT && b.type == FLOAT){
-            frame c;
-            c.data = float(a.data + b.data);
-            c.type = FLOAT;
-            stack.push(c);
-        }
-        else {
-            stack.clearStack();
-            file.close();
-            throw TypeMisMatch(lineNumber);
-        }
+        frame c;
+        c.data = float(a.data + b.data);
+        c.type = FLOAT;
     }
     else {
         stack.clearStack();
@@ -132,16 +120,10 @@ void fsub (StackFrame::myStack<frame>& stack  , fstream& file , int lineNumber){
         a = stack.top(); stack.pop();
         b = stack.top(); stack.pop();
 
-        if(a.type == FLOAT && b.type == FLOAT){
-            frame c;
-            c.data = float(b.data - a.data);
-            c.type = FLOAT;
-            stack.push(c);
-        } else {
-            stack.clearStack();
-            file.close();
-            throw TypeMisMatch(lineNumber);
-        }
+        frame c;
+        c.data = float(b.data - a.data);
+        c.type = FLOAT;
+        stack.push(c);
     } else {
         stack.clearStack();
         file.close();
@@ -180,16 +162,10 @@ void fmul (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
         a = stack.top(); stack.pop();
         b = stack.top(); stack.pop();
 
-        if(a.type == FLOAT && b.type == FLOAT){
-            frame c;
-            c.data = float(b.data * a.data);
-            c.type = FLOAT;
-            stack.push(c);
-        } else {
-            stack.clearStack();
-            file.close();
-            throw TypeMisMatch(lineNumber);
-        }
+        frame c;
+        c.data = float(b.data * a.data);
+        c.type = FLOAT;
+        stack.push(c);
     } else {
         stack.clearStack();
         file.close();
@@ -235,22 +211,15 @@ void fdiv (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
         a = stack.top(); stack.pop();
         b = stack.top(); stack.pop();
 
-        if((a.type == FLOAT) && (b.type == FLOAT)){
-            if(a.data == 0){
-                stack.clearStack();
-                file.close();
-                throw DivideByZero(lineNumber);
-            } else {
-                frame c;
-                c.data = float(b.data / a.data);
-                c.type = FLOAT;
-                stack.push(c);
-            }
-        }
-        else {
+        if(a.data == 0){
             stack.clearStack();
             file.close();
-            throw TypeMisMatch(lineNumber);
+            throw DivideByZero(lineNumber);
+        } else {
+            frame c;
+            c.data = float(b.data / a.data);
+            c.type = FLOAT;
+            stack.push(c);
         }
     }
     else {
@@ -316,16 +285,10 @@ void fneg (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
         frame a;
         a = stack.top(); stack.pop();
         
-        if(a.type == FLOAT){
-            frame c;
-            c.data = float(-a.data);
-            c.type = FLOAT;
-            stack.push(c);
-        } else {
-            stack.clearStack();
-            file.close();
-            throw TypeMisMatch(lineNumber);
-        }
+        frame c;
+        c.data = float(-a.data);
+        c.type = FLOAT;
+        stack.push(c);
     } else {
         stack.clearStack();
         file.close();
@@ -412,18 +375,12 @@ void feq (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
         a = stack.top(); stack.pop();
         b = stack.top(); stack.pop();
 
-        if((a.type == FLOAT) && (b.type == FLOAT)){
-            frame c;
-            int result = (a.data == b.data);
-            if(result)  c.data = 1;
-            else        c.data = 0;
-            c.type = FLOAT;
-            stack.push(c);
-        } else {
-            stack.clearStack();
-            file.close();
-            throw TypeMisMatch(lineNumber);
-        }
+        frame c;
+        int result = (a.data == b.data);
+        if(result)  c.data = 1;
+        else        c.data = 0;
+        c.type = FLOAT;
+        stack.push(c);
     } else {
         stack.clearStack();
         file.close();
@@ -461,18 +418,12 @@ void fneq (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
         a = stack.top(); stack.pop();
         b = stack.top(); stack.pop();
 
-        if((a.type == FLOAT) && (b.type == FLOAT)){
-            frame c;
-            int result = (a.data == b.data);
-            if(!result)  c.data = 1;
-            else        c.data = 0;
-            c.type = FLOAT;
-            stack.push(c);
-        } else {
-            stack.clearStack();
-            file.close();
-            throw TypeMisMatch(lineNumber);
-        }
+        frame c;
+        int result = (a.data == b.data);
+        if(!result)  c.data = 1;
+        else        c.data = 0;
+        c.type = FLOAT;
+        stack.push(c);
     } else {
         stack.clearStack();
         file.close();
@@ -511,18 +462,12 @@ void flt (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
         a = stack.top(); stack.pop();
         b = stack.top(); stack.pop();
 
-        if(a.type == FLOAT && b.type == FLOAT){
-            frame c;
-            int result = (a.data > b.data);
-            if(result)  c.data = 1;
-            else        c.data = 0;
-            c.type = FLOAT;
-            stack.push(c);
-        } else {
-            stack.clearStack();
-            file.close();
-            throw TypeMisMatch(lineNumber);
-        }
+        frame c;
+        int result = (a.data > b.data);
+        if(result)  c.data = 1;
+        else        c.data = 0;
+        c.type = FLOAT;
+        stack.push(c);
     } else {
         stack.clearStack();
         file.close();
@@ -560,18 +505,12 @@ void fgt (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
         a = stack.top(); stack.pop();
         b = stack.top(); stack.pop();
 
-        if(a.type == FLOAT && b.type == FLOAT){
-            frame c;
-            int result = (a.data < b.data);
-            if(result)  c.data = 1;
-            else        c.data = 0;
-            c.type = FLOAT;
-            stack.push(c);
-        } else {
-            stack.clearStack();
-            file.close();
-            throw TypeMisMatch(lineNumber);
-        }
+        frame c;
+        int result = (a.data < b.data);
+        if(result)  c.data = 1;
+        else        c.data = 0;
+        c.type = FLOAT;
+        stack.push(c);
     } else {
         stack.clearStack();
         file.close();
