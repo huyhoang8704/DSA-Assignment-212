@@ -83,6 +83,7 @@ void fadd (StackFrame::myStack<frame>& stack ,  fstream& file , int lineNumber){
         frame c;
         c.data = float(a.data + b.data);
         c.type = FLOAT;
+        stack.push(c);
     }
     else {
         stack.clearStack();
