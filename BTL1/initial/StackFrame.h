@@ -126,7 +126,7 @@ public:
     protected:
         SLinkedList<T> initStack;
     public:
-        myStack(): capacity((OPERAND_STACK_MAX_SIZE/2) - 1) {}
+        myStack(): capacity((OPERAND_STACK_MAX_SIZE/2)) {}
 
         void push(T data) { this->initStack.add(data); }
         void pop () { this->initStack.removeAt(initStack.size() - 1);}
