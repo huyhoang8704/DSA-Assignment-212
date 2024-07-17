@@ -231,13 +231,10 @@ void fdiv (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
 }
 
 void irem (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
-    // cout << "irem" << endl;
     if(stack.stackSize() > 1){
         frame a,b;
         a = stack.top(); stack.pop();
-        // cout << "a = " << a.data << endl;
         b = stack.top(); stack.pop();
-        // cout << "b = " << b.data << endl;
 
         if((a.type == INTEGER) && (b.type == INTEGER)){
             if(a.data == 0){
@@ -247,7 +244,6 @@ void irem (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
             } else {
                 frame c;
                 c.data = int(b.data - int(b.data / a.data) * a.data);
-                // cout << "c = " << c.data << endl;
                 c.type = INTEGER;
                 stack.push(c);
             }
