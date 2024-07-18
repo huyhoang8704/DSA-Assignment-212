@@ -14,11 +14,8 @@ string extractInstruction(string str){
     int size = str.length();
     string instruction;
     for(int i = 0; i < size; i++){
-        if(str[i] != ' '){
-            instruction += str[i];
-        } else{
-            break;
-        }
+        if(str[i] != ' ') instruction += str[i];
+        else break;
     }
     return instruction;
 }
@@ -29,12 +26,8 @@ string extractValue(string str){
     string value;
 
     for(int i = 0; i < size; i++){
-        if(str[i] == ' '){
-            isSpace = true;
-        }
-        if(isSpace){
-            value += str[i];
-        }
+        if(str[i] == ' ') isSpace = true;
+        if(isSpace) value += str[i];
     }
     return value;
 }

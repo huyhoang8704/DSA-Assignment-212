@@ -44,32 +44,26 @@ public:
             }
             this->count++;
         }
-        int size(){
-            return this->count;
-        }
+        int size(){ return this->count; }
         T get(int index){
             if(index <0 || index > size()) throw("The index is out of range!");
             if(size() == 0) throw("List is empty");
             else{
                 Node* temp = this->head;
-                for (int i = 0; i < index; i++) 
-                temp = temp->next;
+                for (int i = 0; i < index; i++)  temp = temp->next;
                 return temp->data; 
             }
         }
-        bool isEmpty(){
-            return size() == 0;
-        }
+        bool isEmpty(){ return size() == 0; }
         void clear(){
             while(size() != 0){
                 removeAt(0);
             }        
         }
         void removeAt(int index){
-            if(index <0 || index >size()) {
-                throw("The index is out of range!");
-            } 
-            if(isEmpty()) throw("List is empty");
+            if(index <0 || index >size())   throw("The index is out of range!");
+            
+            if(isEmpty())                   throw("List is empty");
 
             Node* temp = this->head;
 
@@ -158,17 +152,13 @@ public:
             if(index > LOCAL_VARIABLE_ARRAY_SIZE || index < 0) return true;
             else return false;
         }
-        int getDataType(int index){
-            return (int) localArray[index];
-        }
+        int getDataType(int index){ return (int) localArray[index]; }
         float removeDataValue(int index){
             occupiedIndex[index] = -1;
             return localArray[index + 1];
         }
 
-        float getValue(int index){
-            return localArray[index + 1];
-        }
+        float getValue(int index){ return localArray[index + 1]; }
 
         void setNewValue(float value, int type, int index){
             occupiedIndex[index] = 1;
@@ -176,11 +166,6 @@ public:
             localArray[index + 1] = value;
         }
     };
-    
-    /*
-    Run the method written in the testcase
-    @param filename name of the file
-    */
     void run(std::string filename);
 };
 

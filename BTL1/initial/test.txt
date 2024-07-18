@@ -9,14 +9,14 @@ iconst 10
 top 
 iconst 3
 top 
-idiv 
+ineg 
 top 
 istore 2
 iload 0
 top 
 iload 2
 top 
-iadd 
+ieq 
 top 
 fconst 4.5
 top 
@@ -26,7 +26,7 @@ ior
 top 
 iconst 5
 top 
-imul 
+igt 
 top 
 istore 4
 iconst 8
@@ -44,7 +44,7 @@ iconst 1
 top 
 ineg 
 top 
-iadd 
+irem 
 top 
 iconst 17
 top 
@@ -56,4 +56,4 @@ fconst 1.5
 top 
 iconst 3
 top 
-iadd
+flt
