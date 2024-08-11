@@ -9,6 +9,17 @@ string extractInstruction(string str);
 string extractValue(string str);
 bool expWithValue(string str);
 
+string removeSpaces(const string &str) {
+    string result;
+    result.reserve(str.length()); // Dự trữ bộ nhớ cho chuỗi kết quả để tối ưu
+
+    for (char c : str) {
+        if (c != ' ') {
+            result += c;
+        }
+    }
+    return result;
+}
 string extractInstruction(string str){
     int size = str.length();
     string instruction;
@@ -61,9 +72,11 @@ void StackFrame::run(string filename) {
         getline(file, line);
         lineNumber ++; 
         string instruction;
-        string variable;
+        string a;
         instruction = extractInstruction(line);
-        variable = extractValue(line);
+        a = extractValue(line);
+        string variable = removeSpaces(a);
+        //cout << variable << endl;
 
         // Arithmetic Instructions:: iadd - 1
         if(instruction == "iadd"){
@@ -860,17 +873,31 @@ void StackFrame::run(string filename) {
         else if(instruction == "istore"){
             if(localAVLTree.getSize() < (LOCAL_VARIABLE_ARRAY_SIZE/2)){
                 if(!stack.isEmpty()){
-                    frame newData = stack.top();
-                    stack.pop();
-                    if(newData.type == INTEGER){
-                        localAVLTree.insert(variable, newData);
+                    if(localAVLTree.search(variable)) {
+                        frame newdata = stack.top(); stack.pop();
+                        if(newdata.type == INTEGER) {
+                            localAVLTree.updateData(variable, newdata);
+                        } else {
+                            stack.clearStack();
+                            localAVLTree.destroyTree();
+                            file.close();
+                            throw TypeMisMatch(lineNumber);   
+                        }
+
+                    } else {
+                        frame newData = stack.top();
+                        stack.pop();
+                        if(newData.type == INTEGER){
+                            localAVLTree.insert(variable, newData);
+                        }
+                        else{
+                            stack.clearStack();
+                            localAVLTree.destroyTree();
+                            file.close();
+                            throw TypeMisMatch(lineNumber);   
+                        }
                     }
-                    else{
-                        stack.clearStack();
-                        localAVLTree.destroyTree();
-                        file.close();
-                        throw TypeMisMatch(lineNumber);   
-                    }
+
                 }
                 else{
                     stack.clearStack();
@@ -891,17 +918,30 @@ void StackFrame::run(string filename) {
         else if(instruction == "fstore"){
             if(localAVLTree.getSize() < (LOCAL_VARIABLE_ARRAY_SIZE/2)){
                 if(!stack.isEmpty()){
-                    frame newData = stack.top();
-                    stack.pop();
-                    if(newData.type == FLOAT){
-                        localAVLTree.insert(variable, newData);
+                    if(localAVLTree.search(variable)) {
+                        frame newdata = stack.top(); stack.pop();
+                        if(newdata.type == FLOAT) {
+                            localAVLTree.updateData(variable, newdata);
+                        } else {
+                            stack.clearStack();
+                            localAVLTree.destroyTree();
+                            file.close();
+                            throw TypeMisMatch(lineNumber);   
+                        }
+                    } else {
+                        frame newData = stack.top();
+                        stack.pop();
+                        if(newData.type == FLOAT){
+                            localAVLTree.insert(variable, newData);
+                        }
+                        else{
+                            stack.clearStack();
+                            localAVLTree.destroyTree();
+                            file.close();
+                            throw TypeMisMatch(lineNumber);   
+                        }
                     }
-                    else{
-                        stack.clearStack();
-                        localAVLTree.destroyTree();
-                        file.close();
-                        throw TypeMisMatch(lineNumber);   
-                    }
+
                 }
                 else{
                     stack.clearStack();
@@ -1008,16 +1048,14 @@ void StackFrame::run(string filename) {
         
         // Local Variable Management Instructions:: par <variable> - 32
         else if(instruction == "par"){
-            if(localAVLTree.search(variable) != NULL){
-                if(localAVLTree.searchParent(variable) != NULL){
-                    string keyValue = localAVLTree.searchParent(variable)->getKey();
-                    string result = "";
-                    for(unsigned int i = 0; i < keyValue.length(); i++){
-                        if(keyValue[i] != ' '){
-                            result += keyValue[i];
-                        }
-                    }
-                    cout << result << "\n";
+            //cout << variable << "\n";
+            //localAVLTree.preorder();
+            //cout << localAVLTree.search(variable)->getKey() << "\n";
+            //localAVLTree.print2D();
+            if(localAVLTree.search(variable)){
+                
+                if(localAVLTree.searchParent(variable)){
+                    cout << localAVLTree.searchParent(variable)->getKey() << "\n";
                 }
                 else if (localAVLTree.searchParent(variable) == NULL){
                     cout << "null" << "\n";

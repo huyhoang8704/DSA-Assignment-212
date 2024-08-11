@@ -2,7 +2,7 @@
 #define __STACK_FRAME_H__
 
 #include <string>
-#include <iostream>
+#include <stack>
 
 #define FLOAT 1
 #define INTEGER 0
@@ -151,17 +151,33 @@ public:
                 if(!node) return 0;
                 int left = this->getHeightRec(node->left);
                 int right = this->getHeightRec(node->right);
-                return max(left, right) + 1;
+                return (left > right ? left : right) + 1;
             }
         public:
             AVLTree() : root(nullptr) {}
             ~AVLTree(){}
 
-            int getHeight(){ this->getHeightRec(this->root); }
+            int getHeight(){ return this->getHeightRec(this->root); }
             int getBalance(Node *subroot) {
                 if(!subroot) return 0;
                 return getHeightRec(subroot->right) - getHeightRec(subroot->left); 
             }
+            bool isLessThan(const K &a, const K &b) {
+                int lenA = a.length();
+                int lenB = b.length();
+                int minLen = lenA < lenB ? lenA : lenB;
+
+                // So sánh từng ký tự tại các vị trí tương ứng trong chuỗi
+                for (int i = 0; i < minLen; ++i) {
+                    if (a[i] < b[i]) return true;
+                    else if (a[i] > b[i]) return false; 
+                }
+
+                // Nếu tất cả ký tự từ đầu đến minLen giống nhau, so sánh độ dài
+                return lenA < lenB;
+            }           
+
+
             // Rotate Right
             Node* LLRotation(Node *A){
                 Node *B = A->left;
@@ -190,8 +206,8 @@ public:
             Node* insertNode(Node* pNode, K key, T data){
                 if(!pNode) return new Node(data,key);
 
-                if(key < pNode->key) pNode->left = insertNode(pNode->left, key, data);
-                else if(key >= pNode->key) pNode->right = insertNode(pNode->right, key, data);
+                if(this->isLessThan(key, pNode->key)) pNode->left = insertNode(pNode->left, key, data);
+                else if(!this->isLessThan(key, pNode->key)) pNode->right = insertNode(pNode->right, key, data);
 
                 int balance = getBalance(pNode);
                 // LL Rotation
@@ -251,29 +267,26 @@ public:
                 return searchRec(pNode->right, key);
             }
             Node *search(K key){ return searchRec(this->root, key);}
-            void destroyTree(){ this->root = destroyTreeRec(this->root); }
-            void *destroyTreeRec(Node *pNode){
-                if(!pNode) return NULL;
+            void destroyTree(){  destroyTreeRec(this->root); }
+            void destroyTreeRec(Node *pNode){
+                if(!pNode) return ;
                 destroyTreeRec(pNode->left);
                 destroyTreeRec(pNode->right);
                 delete pNode;
                 pNode = NULL;
             }
-            Node *searchParentRec(Node *pNode, K key){
-                if(!pNode) return NULL;
-                if(pNode->left->key == key) return pNode;
-                else if (pNode->right->key == key) return pNode;
-                else {
-                    searchParentRec(pNode->left, key);
-                    searchParentRec(pNode->right, key);
-                }
-                return NULL;
+            Node * searchParentRec(Node * pNode , K key){
+                if(!pNode) return nullptr;
+                if((pNode->left && key == pNode->left->key) || (pNode->right && key == pNode->right->key)) return pNode;
+                Node *leftSearch = searchParentRec(pNode->left, key);
+                if(leftSearch) return leftSearch;
+
+                return searchParentRec(pNode->right, key);
             }
-            Node *searchParent(K key){
-                Node *temp = searchParentRec(this->root, key);
-                if(!temp) return NULL;
-                std::cout << temp->key;
-                if(temp->key == key) return NULL;
+            Node *searchParent(K key) {
+                if(!this->root || this->root->key == key) return nullptr;
+                Node *temp = this->searchParentRec(this->root,key);
+                if(!temp) return nullptr;
                 return temp;
             }
             int countNodeRec(Node *pNode){
@@ -281,7 +294,10 @@ public:
                 else return 1 + countNodeRec(pNode->left) + countNodeRec(pNode->right);
             }
             int getSize(){ return countNodeRec(this->root);}
-        
+            void updateData(const K &key , const T &newData){
+                Node *temp = this->search(key);
+                temp->data = newData;
+            }
             class Node {
                 private:
                     T data;

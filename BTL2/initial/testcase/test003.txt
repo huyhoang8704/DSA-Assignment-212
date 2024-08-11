@@ -1,7 +1,8 @@
-iconst 3
-iconst 2
-imul
+iconst 20
+istore x
+iload x
 top
-istore a
-iload a
+fconst 3.5
+fstore y
+fload y
 top

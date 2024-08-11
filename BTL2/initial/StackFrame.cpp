@@ -8,8 +8,19 @@ using namespace std;
 
 string extractInstruction(string str);
 string extractValue(string str);
-bool expWithValue(string str);
+string removeSpaces(const string &str);
 
+string removeSpaces(const string &str) {
+    string result;
+    result.reserve(str.length());
+
+    for (char c : str) {
+        if (c != ' ') {
+            result += c;
+        }
+    }
+    return result;
+}
 string extractInstruction(string str){
     int size = str.length();
     string instruction;
@@ -32,16 +43,8 @@ string extractValue(string str){
     return value;
 }
 
-bool expWithValue(string str){
-    for(unsigned int i = 0; i < str.length(); i ++){
-        if(str[i] == ' ') return true;
-    }
-    return false;
-}
-
-
 //! Nhóm lệnh phép toán (Arithmetic Instructions)
-void iadd (StackFrame::myStack<frame>& stack  , fstream& file , int lineNumber){
+void iadd (StackFrame::myStack<frame>& stack  ,StackFrame::AVLTree<frame,string>& localAVLTree ,fstream& file , int lineNumber){
     if(stack.stackSize() > 1){
         frame a,b;
         a = stack.top(); stack.pop();
@@ -55,19 +58,21 @@ void iadd (StackFrame::myStack<frame>& stack  , fstream& file , int lineNumber){
         }
         else {
             stack.clearStack();
+            localAVLTree.destroyTree();
             file.close();
             throw TypeMisMatch(lineNumber);
         }
     }
     else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
 }
 
 //! 2
-void fadd (StackFrame::myStack<frame>& stack ,  fstream& file , int lineNumber){
+void fadd (StackFrame::myStack<frame>& stack,StackFrame::AVLTree<frame,string>& localAVLTree ,  fstream& file , int lineNumber){
     if(stack.stackSize() > 1){
         frame a,b;
         a = stack.top(); stack.pop();
@@ -80,12 +85,13 @@ void fadd (StackFrame::myStack<frame>& stack ,  fstream& file , int lineNumber){
     }
     else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
 }
 
-void isub (StackFrame::myStack<frame>& stack  , fstream& file , int lineNumber){
+void isub (StackFrame::myStack<frame>& stack  ,StackFrame::AVLTree<frame,string>& localAVLTree, fstream& file , int lineNumber){
     if(stack.stackSize() >1){
         frame a,b;
         a = stack.top(); stack.pop();
@@ -98,17 +104,19 @@ void isub (StackFrame::myStack<frame>& stack  , fstream& file , int lineNumber){
             stack.push(c);
         } else {
             stack.clearStack();
+            localAVLTree.destroyTree();
             file.close();
             throw TypeMisMatch(lineNumber);
         }
     } else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
     
 }
-void fsub (StackFrame::myStack<frame>& stack  , fstream& file , int lineNumber){
+void fsub (StackFrame::myStack<frame>& stack  ,StackFrame::AVLTree<frame,string>& localAVLTree, fstream& file , int lineNumber){
     if(stack.stackSize() >1){
         frame a,b;
         a = stack.top(); stack.pop();
@@ -120,13 +128,14 @@ void fsub (StackFrame::myStack<frame>& stack  , fstream& file , int lineNumber){
         stack.push(c);
     } else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
     
 }
 
-void imul (StackFrame::myStack<frame>& stack  , fstream& file , int lineNumber){
+void imul (StackFrame::myStack<frame>& stack  ,StackFrame::AVLTree<frame,string>& localAVLTree, fstream& file , int lineNumber){
     if(stack.stackSize() >1){
         frame a,b;
         a = stack.top(); stack.pop();
@@ -139,18 +148,20 @@ void imul (StackFrame::myStack<frame>& stack  , fstream& file , int lineNumber){
             stack.push(c);
         } else {
             stack.clearStack();
+            localAVLTree.destroyTree();
             file.close();
             throw TypeMisMatch(lineNumber);
         }
     } else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
     
 }
 
-void fmul (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
+void fmul (StackFrame::myStack<frame>& stack ,StackFrame::AVLTree<frame,string>& localAVLTree, fstream& file , int lineNumber){
     if(stack.stackSize() >1){
         frame a,b;
         a = stack.top(); stack.pop();
@@ -162,21 +173,22 @@ void fmul (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
         stack.push(c);
     } else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
     
 }
 
-void idiv (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
+void idiv (StackFrame::myStack<frame>& stack ,StackFrame::AVLTree<frame,string>& localAVLTree, fstream& file , int lineNumber){
     if(stack.stackSize() > 1){
         frame a,b;
         a = stack.top(); stack.pop();
         b = stack.top(); stack.pop();
-
         if((a.type == INTEGER) && (b.type == INTEGER)){
-            if(a.data == 0){
+            if((int)a.data == 0){
                 stack.clearStack();
+                localAVLTree.destroyTree();
                 file.close();
                 throw DivideByZero(lineNumber);
             } else {
@@ -188,18 +200,20 @@ void idiv (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
         }
         else {
             stack.clearStack();
+            localAVLTree.destroyTree();
             file.close();
             throw TypeMisMatch(lineNumber);
         }
     }
     else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
 }
 
-void fdiv (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
+void fdiv (StackFrame::myStack<frame>& stack ,StackFrame::AVLTree<frame,string>& localAVLTree, fstream& file , int lineNumber){
     if(stack.stackSize() > 1){
         frame a,b;
         a = stack.top(); stack.pop();
@@ -207,6 +221,7 @@ void fdiv (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
 
         if(a.data == 0){
             stack.clearStack();
+            localAVLTree.destroyTree();
             file.close();
             throw DivideByZero(lineNumber);
         } else {
@@ -218,12 +233,13 @@ void fdiv (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
     }
     else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
 }
 
-void irem (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
+void irem (StackFrame::myStack<frame>& stack ,StackFrame::AVLTree<frame,string>& localAVLTree, fstream& file , int lineNumber){
     if(stack.stackSize() > 1){
         frame a,b;
         a = stack.top(); stack.pop();
@@ -232,6 +248,7 @@ void irem (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
         if((a.type == INTEGER) && (b.type == INTEGER)){
             if(a.data == 0){
                 stack.clearStack();
+                localAVLTree.destroyTree();
                 file.close();
                 throw DivideByZero(lineNumber);
             } else {
@@ -242,17 +259,19 @@ void irem (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
             }
         } else {
             stack.clearStack();
+            localAVLTree.destroyTree();
             file.close();
             throw TypeMisMatch(lineNumber);
         }
     } else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
 }
 
-void ineg (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
+void ineg (StackFrame::myStack<frame>& stack ,StackFrame::AVLTree<frame,string>& localAVLTree, fstream& file , int lineNumber){
     if(stack.stackSize() > 0){
         frame a;
         a = stack.top(); stack.pop();
@@ -264,17 +283,19 @@ void ineg (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
             stack.push(c);
         } else {
             stack.clearStack();
+            localAVLTree.destroyTree();
             file.close();
             throw TypeMisMatch(lineNumber);
         }
     } else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
 }
 
-void fneg (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
+void fneg (StackFrame::myStack<frame>& stack ,StackFrame::AVLTree<frame,string>& localAVLTree, fstream& file , int lineNumber){
     if(stack.stackSize() > 0){
         frame a;
         a = stack.top(); stack.pop();
@@ -285,12 +306,13 @@ void fneg (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
         stack.push(c);
     } else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
 }
 
-void iand (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
+void iand (StackFrame::myStack<frame>& stack ,StackFrame::AVLTree<frame,string>& localAVLTree, fstream& file , int lineNumber){
     if(stack.stackSize() > 1){
         frame a,b;
         a = stack.top(); stack.pop();
@@ -304,17 +326,19 @@ void iand (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
             stack.push(c);
         } else {
             stack.clearStack();
+            localAVLTree.destroyTree();
             file.close();
             throw TypeMisMatch(lineNumber);
         }
     } else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
 }
 
-void ior (StackFrame::myStack<frame>& stack ,  fstream& file , int lineNumber){
+void ior (StackFrame::myStack<frame>& stack ,StackFrame::AVLTree<frame,string>& localAVLTree,  fstream& file , int lineNumber){
     if(stack.stackSize() > 1){
         frame a,b;
         a = stack.top(); stack.pop();
@@ -328,17 +352,19 @@ void ior (StackFrame::myStack<frame>& stack ,  fstream& file , int lineNumber){
             stack.push(c);
         } else {
             stack.clearStack();
+            localAVLTree.destroyTree();
             file.close();
             throw TypeMisMatch(lineNumber);
         }
     } else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
 }
 
-void ieq (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
+void ieq (StackFrame::myStack<frame>& stack ,StackFrame::AVLTree<frame,string>& localAVLTree, fstream& file , int lineNumber){
     if(stack.stackSize() > 1){
         frame a,b;
         a = stack.top(); stack.pop();
@@ -353,17 +379,19 @@ void ieq (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
             stack.push(c);
         } else {
             stack.clearStack();
+            localAVLTree.destroyTree();
             file.close();
             throw TypeMisMatch(lineNumber);
         }
     } else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
 }
 
-void feq (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
+void feq (StackFrame::myStack<frame>& stack ,StackFrame::AVLTree<frame,string>& localAVLTree, fstream& file , int lineNumber){
     if(stack.stackSize() > 1){
         frame a,b;
         a = stack.top(); stack.pop();
@@ -377,11 +405,12 @@ void feq (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
         stack.push(c);
     } else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
 }
-void ineq (StackFrame::myStack<frame>& stack ,fstream& file , int lineNumber){
+void ineq (StackFrame::myStack<frame>& stack ,StackFrame::AVLTree<frame,string>& localAVLTree,fstream& file , int lineNumber){
     if(stack.stackSize() > 1){
         frame a,b;
         a = stack.top(); stack.pop();
@@ -396,17 +425,19 @@ void ineq (StackFrame::myStack<frame>& stack ,fstream& file , int lineNumber){
             stack.push(c);
         } else {
             stack.clearStack();
+            localAVLTree.destroyTree();
             file.close();
             throw TypeMisMatch(lineNumber);
         }
     } else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
 }
 
-void fneq (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
+void fneq (StackFrame::myStack<frame>& stack ,StackFrame::AVLTree<frame,string>& localAVLTree, fstream& file , int lineNumber){
     if(stack.stackSize() > 1){
         frame a,b;
         a = stack.top(); stack.pop();
@@ -420,12 +451,13 @@ void fneq (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
         stack.push(c);
     } else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
 }
 
-void ilt (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
+void ilt (StackFrame::myStack<frame>& stack ,StackFrame::AVLTree<frame,string>& localAVLTree, fstream& file , int lineNumber){
     if(stack.stackSize() > 1){
         frame a,b;
         a = stack.top(); stack.pop();
@@ -440,17 +472,19 @@ void ilt (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
             stack.push(c);
         } else {
             stack.clearStack();
+            localAVLTree.destroyTree();
             file.close();
             throw TypeMisMatch(lineNumber);
         }
     } else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
 }
 
-void flt (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
+void flt (StackFrame::myStack<frame>& stack ,StackFrame::AVLTree<frame,string>& localAVLTree, fstream& file , int lineNumber){
     if(stack.stackSize() > 1){
         frame a,b;
         a = stack.top(); stack.pop();
@@ -464,11 +498,12 @@ void flt (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
         stack.push(c);
     } else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
 }
-void igt (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
+void igt (StackFrame::myStack<frame>& stack ,StackFrame::AVLTree<frame,string>& localAVLTree, fstream& file , int lineNumber){
     if(stack.stackSize() > 1){
         frame a,b;
         a = stack.top(); stack.pop();
@@ -483,17 +518,19 @@ void igt (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
             stack.push(c);
         } else {
             stack.clearStack();
+            localAVLTree.destroyTree();
             file.close();
             throw TypeMisMatch(lineNumber);
         }
     } else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
 }
 
-void fgt (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
+void fgt (StackFrame::myStack<frame>& stack ,StackFrame::AVLTree<frame,string>& localAVLTree, fstream& file , int lineNumber){
     if(stack.stackSize() > 1){
         frame a,b;
         a = stack.top(); stack.pop();
@@ -507,12 +544,13 @@ void fgt (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
         stack.push(c);
     } else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
 }
 
-void ibnot (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
+void ibnot (StackFrame::myStack<frame>& stack ,StackFrame::AVLTree<frame,string>& localAVLTree, fstream& file , int lineNumber){
     if(stack.stackSize() > 0){
         frame a;
         a = stack.top(); stack.pop();
@@ -524,11 +562,13 @@ void ibnot (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
             stack.push(c);
         } else {
             stack.clearStack();
+            localAVLTree.destroyTree();
             file.close();
             throw TypeMisMatch(lineNumber);
         }
     } else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
@@ -536,9 +576,10 @@ void ibnot (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
 
 
 //! Nhóm lệnh nạp và lưu (Load and Store Instructions)
-void iconst (StackFrame::myStack<frame>& stack , StackFrame::myLocalVariableArray& array , fstream& file , int lineNumber , string value){
+void iconst (StackFrame::myStack<frame>& stack ,StackFrame::AVLTree<frame,string>& localAVLTree , fstream& file , int lineNumber , string value){
     if(stack.isFull()){
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackFull(lineNumber);
     } else {
@@ -548,9 +589,10 @@ void iconst (StackFrame::myStack<frame>& stack , StackFrame::myLocalVariableArra
         stack.push(c);
     }
 }
-void fconst (StackFrame::myStack<frame>& stack , StackFrame::myLocalVariableArray& array , fstream& file , int lineNumber , string value){
+void fconst (StackFrame::myStack<frame>& stack , StackFrame::AVLTree<frame,string>& localAVLTree , fstream& file , int lineNumber , string value){
     if(stack.isFull()){
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackFull(lineNumber);
     } else {
@@ -561,162 +603,166 @@ void fconst (StackFrame::myStack<frame>& stack , StackFrame::myLocalVariableArra
     }
 }
 
-void iload (StackFrame::myStack<frame>& stack , StackFrame::myLocalVariableArray& array , fstream& file , int lineNumber , string value){
-    int index = stoi(value);
-    if(array.outOfRange(index)){
-        stack.clearStack();
-        file.close();
-        throw ArrayOutOfRange(lineNumber);
-    } else {
-        if(!array.checkOccupiedIndex(index)){
-            stack.clearStack();
-            file.close();
-            throw UndefinedVariable(lineNumber);
-        } else {
-            if(array.getDataType(index) != INTEGER){
+void iload (StackFrame::myStack<frame>& stack , StackFrame::AVLTree<frame,string>& localAVLTree , fstream& file , int lineNumber , string value){
+    if(localAVLTree.search(value)) {
+        frame c = localAVLTree.search(value)->getFrame();
+        if(c.type == INTEGER) {
+            if(!stack.isFull()) stack.push(c);
+            else {
                 stack.clearStack();
+                localAVLTree.destroyTree();
                 file.close();
-                throw TypeMisMatch(lineNumber);
-            } else {
-                if(stack.isFull()) {
+                throw StackFull(lineNumber);
+            }
+        } else {
+            stack.clearStack();
+            localAVLTree.destroyTree();
+            file.close();
+            throw TypeMisMatch(lineNumber);
+        }
+    } else {
+        stack.clearStack();
+        localAVLTree.destroyTree();
+        file.close();
+        throw UndefinedVariable(lineNumber);
+    }
+}
+
+void fload (StackFrame::myStack<frame>& stack , StackFrame::AVLTree<frame,string>& localAVLTree , fstream& file , int lineNumber , string value){
+    if(localAVLTree.search(value)) {
+        frame c = localAVLTree.search(value)->getFrame();
+        if(c.type == FLOAT) {
+            if(!stack.isFull()) stack.push(c);
+            else {
+                stack.clearStack();
+                localAVLTree.destroyTree();
+                file.close();
+                throw StackFull(lineNumber);
+            }
+        } else {
+            stack.clearStack();
+            localAVLTree.destroyTree();
+            file.close();
+            throw TypeMisMatch(lineNumber);
+        }
+    }
+}
+
+void istore (StackFrame::myStack<frame>& stack , StackFrame::AVLTree<frame,string>& localAVLTree , fstream& file , int lineNumber , string value){
+    if(localAVLTree.getSize() < (LOCAL_VARIABLE_ARRAY_SIZE/2)) {
+        if(!stack.isEmpty()) {
+            frame c = stack.top(); stack.pop();
+            if(localAVLTree.search(value)) {
+                if(c.type == INTEGER) localAVLTree.updateData(value,c);
+                else {
                     stack.clearStack();
+                    localAVLTree.destroyTree();
                     file.close();
-                    throw StackFull(lineNumber);
-                } else {
-                    frame c;
-                    c.data = (int) array.getValue(index);
-                    c.type = INTEGER;
-                    stack.push(c);
+                    throw TypeMisMatch(lineNumber);
+                }
+            } else {
+                if(c.type == INTEGER) localAVLTree.insert(value,c);
+                else {
+                    stack.clearStack();
+                    localAVLTree.destroyTree();
+                    file.close();
+                    throw TypeMisMatch(lineNumber); 
                 }
             }
+        } else {
+            stack.clearStack();
+            localAVLTree.destroyTree();
+            file.close();
+            throw StackEmpty(lineNumber);
         }
+    } else {
+        stack.clearStack();
+        localAVLTree.destroyTree();
+        file.close();
+        throw LocalSpaceFull(lineNumber);
     }
 }
 
-void fload (StackFrame::myStack<frame>& stack , StackFrame::myLocalVariableArray& array , fstream& file , int lineNumber , string value){
-    int index = stoi(value);
-    if(array.outOfRange(index)){
-        stack.clearStack();
-        file.close();
-        throw ArrayOutOfRange(lineNumber);
-    } else {
-        if(!array.checkOccupiedIndex(index)){
-            stack.clearStack();
-            file.close();
-            throw UndefinedVariable(lineNumber);
-        } else {
-            if(array.getDataType(index) != FLOAT){
-                stack.clearStack();
-                file.close();
-                throw TypeMisMatch(lineNumber);
-            } else {
-                if(stack.isFull()) {
+void fstore (StackFrame::myStack<frame>& stack , StackFrame::AVLTree<frame,string>& localAVLTree , fstream& file , int lineNumber , string value){
+    if(localAVLTree.getSize() < (LOCAL_VARIABLE_ARRAY_SIZE/2)) {
+        if(!stack.isEmpty()) {
+            frame c = stack.top(); stack.pop();
+            if(localAVLTree.search(value)) {
+                if(c.type == FLOAT) localAVLTree.updateData(value,c);
+                else {
                     stack.clearStack();
+                    localAVLTree.destroyTree();
                     file.close();
-                    throw StackFull(lineNumber);
-                } else {
-                    frame c;
-                    c.data = (float) array.getValue(index);
-                    c.type = FLOAT;
-                    stack.push(c);
+                    throw TypeMisMatch(lineNumber);
+                }
+            } else {
+                if(c.type == FLOAT) localAVLTree.insert(value,c);
+                else {
+                    stack.clearStack();
+                    localAVLTree.destroyTree();
+                    file.close();
+                    throw TypeMisMatch(lineNumber); 
                 }
             }
-        }
-    }
-}
-
-void istore (StackFrame::myStack<frame>& stack , StackFrame::myLocalVariableArray& array , fstream& file , int lineNumber , string value){
-    int index = stoi(value);
-    if(array.outOfRange(index)){
-        stack.clearStack();
-        file.close();
-        throw ArrayOutOfRange(lineNumber);
-    } else {
-        if(stack.isEmpty()){
+        } else {
             stack.clearStack();
+            localAVLTree.destroyTree();
             file.close();
             throw StackEmpty(lineNumber);
-        } else {
-            frame a;
-            a = stack.top(); stack.pop();
-            if(a.type == INTEGER){
-                array.setNewValue(a.data,a.type,index);
-            } else {
-                stack.clearStack();
-                file.close();
-                throw TypeMisMatch(lineNumber);
-            }
         }
-    }
-}
-
-void fstore (StackFrame::myStack<frame>& stack , StackFrame::myLocalVariableArray& array , fstream& file , int lineNumber , string value){
-    int index = stoi(value);
-    if(array.outOfRange(index)){
-        stack.clearStack();
-        file.close();
-        throw ArrayOutOfRange(lineNumber);
     } else {
-        if(stack.isEmpty()){
-            stack.clearStack();
-            file.close();
-            throw StackEmpty(lineNumber);
-        } else {
-            frame a;
-            a = stack.top(); stack.pop();
-            if(a.type == FLOAT){
-                array.setNewValue(a.data,a.type,index);
-            } else {
-                stack.clearStack();
-                file.close();
-                throw TypeMisMatch(lineNumber);
-            }
-        }
+        stack.clearStack();
+        localAVLTree.destroyTree();
+        file.close();
+        throw LocalSpaceFull(lineNumber);
     }
 }
 
 //! Nhóm lệnh chuyển đổi kiểu (Type conversion Instructions)
 
-void i2f (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber , string value){
+void i2f (StackFrame::myStack<frame>& stack , StackFrame::AVLTree<frame,string>& localAVLTree, fstream& file , int lineNumber , string value){
     if(stack.stackSize() > 0){
-        frame a;
-        a = stack.top(); stack.pop();
+        frame a = stack.top(); stack.pop();
         if(a.type == INTEGER){
             a.type = FLOAT;
             stack.push(a);
         } else {
             stack.clearStack();
+            localAVLTree.destroyTree();
             file.close();
             throw TypeMisMatch(lineNumber);
         }
     } else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
 }
-void f2i (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber , string value){
+void f2i (StackFrame::myStack<frame>& stack , StackFrame::AVLTree<frame,string>& localAVLTree, fstream& file , int lineNumber , string value){
     if(stack.stackSize() > 0){
-        frame a;
-        a = stack.top(); stack.pop();
+        frame a = stack.top(); stack.pop();
         if(a.type == FLOAT){
             a.type = INTEGER;
             stack.push(a);
         } else {
             stack.clearStack();
+            localAVLTree.destroyTree();
             file.close();
             throw TypeMisMatch(lineNumber);
         }
     } else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
 }
 //! Nhóm lệnh quản lý trạng thái ngăn xếp toán hạng (Operand Stack Management Instructions)
-void top (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
+void top (StackFrame::myStack<frame>& stack , StackFrame::AVLTree<frame,string>& localAVLTree, fstream& file , int lineNumber){
     if(stack.isEmpty()){
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
         throw StackEmpty(lineNumber);
     }
@@ -732,30 +778,30 @@ void top (StackFrame::myStack<frame>& stack , fstream& file , int lineNumber){
     }
 }
 //! Nhóm lệnh quản lý biến cục bộ (Local Variable Management Instructions)
-void val (StackFrame::myStack<frame>& stack , StackFrame::myLocalVariableArray& array , fstream& file , int lineNumber , string value){
-    int index = stoi(value);
-    if(array.outOfRange(index)){
+void val (StackFrame::myStack<frame>& stack , StackFrame::AVLTree<frame,string>& localAVLTree , fstream& file , int lineNumber , string value){
+    if(localAVLTree.search(value)) {
+        if(localAVLTree.search(value)->getFrame().type == INTEGER) cout << (int)localAVLTree.search(value)->getFrame().data << "\n";
+        else if(localAVLTree.search(value)->getFrame().type == FLOAT) cout << (float)localAVLTree.search(value)->getFrame().data << "\n";
+    } else {
         stack.clearStack();
+        localAVLTree.destroyTree();
         file.close();
-        throw ArrayOutOfRange(lineNumber);
-    }
-    else{
-        if(!array.checkOccupiedIndex(index)){
-            stack.clearStack();
-            file.close();
-            throw UndefinedVariable(lineNumber);
-        }
-        else{
-            if(array.getDataType(index) == INTEGER){
-                cout << (int)array.getValue(index) << "\n";
-            }
-            else{
-                cout << (float)array.getValue(index) << "\n";
-            }
-        }
+        throw UndefinedVariable(lineNumber);
     }
 }
-
+void par (StackFrame::myStack<frame>& stack , StackFrame::AVLTree<frame,string>& localAVLTree , fstream& file , int lineNumber , string value){
+    if(localAVLTree.search(value)){
+        if(localAVLTree.searchParent(value)) cout << localAVLTree.searchParent(value) ->getKey() <<endl;
+        else cout << "null" <<endl;
+    }
+    else{
+        stack.clearStack();
+        localAVLTree.destroyTree();
+        file.close();
+        throw UndefinedVariable(lineNumber);              
+    }
+        
+}
 
 
 
@@ -765,7 +811,7 @@ StackFrame::StackFrame() : opStackMaxSize(OPERAND_STACK_MAX_SIZE), localVarArrSi
 
 void StackFrame::run(string filename) {
     myStack<frame> stack;
-    myLocalVariableArray array;
+    AVLTree<frame,string> localAVLTree;
 
     fstream file;
     string line;
@@ -777,52 +823,54 @@ void StackFrame::run(string filename) {
         getline(file, line);
         lineNumber ++; 
         string instruction;
-        string value;
+        string a;
         instruction = extractInstruction(line);
-        value = extractValue(line);
+        a = extractValue(line);
+        string value = removeSpaces(a);
 
         // Nhóm lệnh phép toán (Arithmetic Instructions)
-        if(instruction == "iadd")       iadd(stack,file,lineNumber);
-        else if (instruction == "fadd") fadd(stack,file,lineNumber);
-        else if (instruction == "isub") isub(stack,file,lineNumber);
-        else if (instruction == "fsub") fsub(stack,file,lineNumber);
-        else if (instruction == "imul") imul(stack,file,lineNumber);
-        else if (instruction == "fmul") fmul(stack,file,lineNumber);
-        else if (instruction == "idiv") idiv(stack,file,lineNumber);
-        else if (instruction == "fdiv") fdiv(stack,file,lineNumber);
-        else if (instruction == "irem") irem(stack,file,lineNumber);
-        else if (instruction == "ineg") ineg(stack,file,lineNumber);
-        else if (instruction == "fneg") fneg(stack,file,lineNumber);
-        else if (instruction == "iand") iand(stack,file,lineNumber);
-        else if (instruction == "ior")  ior(stack,file,lineNumber);
-        else if (instruction == "ieq")  ieq(stack,file,lineNumber);
-        else if (instruction == "feq")  feq(stack,file,lineNumber);
-        else if (instruction == "ineq") ineq(stack,file,lineNumber);
-        else if (instruction == "fneq") fneq(stack,file,lineNumber);
-        else if (instruction == "ilt")  ilt(stack,file,lineNumber);
-        else if (instruction == "flt")  flt(stack,file,lineNumber);
-        else if (instruction == "igt")  igt(stack,file,lineNumber);
-        else if (instruction == "fgt")  fgt(stack,file,lineNumber);
-        else if (instruction == "ibnot")ibnot(stack,file,lineNumber);
+        if(instruction == "iadd")       iadd(stack,localAVLTree,file,lineNumber);
+        else if (instruction == "fadd") fadd(stack,localAVLTree,file,lineNumber);
+        else if (instruction == "isub") isub(stack,localAVLTree,file,lineNumber);
+        else if (instruction == "fsub") fsub(stack,localAVLTree,file,lineNumber);
+        else if (instruction == "imul") imul(stack,localAVLTree,file,lineNumber);
+        else if (instruction == "fmul") fmul(stack,localAVLTree,file,lineNumber);
+        else if (instruction == "idiv") idiv(stack,localAVLTree,file,lineNumber);
+        else if (instruction == "fdiv") fdiv(stack,localAVLTree,file,lineNumber);
+        else if (instruction == "irem") irem(stack,localAVLTree,file,lineNumber);
+        else if (instruction == "ineg") ineg(stack,localAVLTree,file,lineNumber);
+        else if (instruction == "fneg") fneg(stack,localAVLTree,file,lineNumber);
+        else if (instruction == "iand") iand(stack,localAVLTree,file,lineNumber);
+        else if (instruction == "ior")  ior(stack,localAVLTree,file,lineNumber);
+        else if (instruction == "ieq")  ieq(stack,localAVLTree,file,lineNumber);
+        else if (instruction == "feq")  feq(stack,localAVLTree,file,lineNumber);
+        else if (instruction == "ineq") ineq(stack,localAVLTree,file,lineNumber);
+        else if (instruction == "fneq") fneq(stack,localAVLTree,file,lineNumber);
+        else if (instruction == "ilt")  ilt(stack,localAVLTree,file,lineNumber);
+        else if (instruction == "flt")  flt(stack,localAVLTree,file,lineNumber);
+        else if (instruction == "igt")  igt(stack,localAVLTree,file,lineNumber);
+        else if (instruction == "fgt")  fgt(stack,localAVLTree,file,lineNumber);
+        else if (instruction == "ibnot")ibnot(stack,localAVLTree,file,lineNumber);
 
         // Nhóm lệnh nạp và lưu (Load and Store Instructions)
-        else if (instruction == "iconst")    iconst(stack,array,file,lineNumber,value);
-        else if (instruction == "fconst")    fconst(stack,array,file,lineNumber,value);
-        else if (instruction == "iload")     iload(stack,array,file,lineNumber,value);
-        else if (instruction == "fload")     fload(stack,array,file,lineNumber,value);
-        else if (instruction == "istore")    istore(stack,array,file,lineNumber,value);
-        else if (instruction == "fstore")    fstore(stack,array,file,lineNumber,value);
+        else if (instruction == "iconst")    iconst(stack,localAVLTree,file,lineNumber,value);
+        else if (instruction == "fconst")    fconst(stack,localAVLTree,file,lineNumber,value);
+        else if (instruction == "iload")     iload(stack,localAVLTree,file,lineNumber,value);
+        else if (instruction == "fload")     fload(stack,localAVLTree,file,lineNumber,value);
+        else if (instruction == "istore")    istore(stack,localAVLTree,file,lineNumber,value);
+        else if (instruction == "fstore")    fstore(stack,localAVLTree,file,lineNumber,value);
 
         // Nhóm lệnh chuyển đổi kiểu (Type conversion Instructions)
-        else if (instruction == "i2f")       i2f(stack,file,lineNumber,value);
-        else if (instruction == "f2i")       f2i(stack,file,lineNumber,value);
+        else if (instruction == "i2f")       i2f(stack,localAVLTree,file,lineNumber,value);
+        else if (instruction == "f2i")       f2i(stack,localAVLTree,file,lineNumber,value);
 
         // Nhóm lệnh quản lý trạng thái ngăn xếp toán hạng (Operand Stack Management Instructions)
-        else if (instruction == "top")       top(stack,file,lineNumber);
+        else if (instruction == "top")       top(stack,localAVLTree,file,lineNumber);
 
 
         // Nhóm lệnh quản lý biến cách bộ (Local Variable Management Instructions)
-        else if (instruction == "val") val(stack,array,file,lineNumber,value);
-
+        else if (instruction == "val") val(stack,localAVLTree,file,lineNumber,value);
+        else if (instruction == "par") par(stack,localAVLTree,file,lineNumber,value);
     }
-}
+    file.close();
+}   

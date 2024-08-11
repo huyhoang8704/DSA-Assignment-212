@@ -1,4 +1,9 @@
-iconst 3
-iconst 2
-imul
+iconst 10
+i2f
+top
+fconst 10.0
+feq
+top
+fconst 15.0
+fgt
 top

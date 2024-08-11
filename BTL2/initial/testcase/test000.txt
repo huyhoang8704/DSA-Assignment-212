@@ -1,2 +1,17 @@
+iconst 10
+iconst 5
+iadd
+top
+iconst 7
+isub
+top
+iconst 6
+imul
+top
+iconst 2
+idiv
+top
+iconst 14
 iconst 3
+irem
 top

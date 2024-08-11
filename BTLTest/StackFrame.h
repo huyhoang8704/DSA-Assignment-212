@@ -11,6 +11,9 @@
 #define OPERAND_STACK_MAX_SIZE 32
 #define LOCAL_VARIABLE_ARRAY_SIZE 256
 
+
+
+
 enum BalanceValue
 {
     LH = -1,
@@ -285,6 +288,20 @@ public:
             if(pNode==NULL) return 0;
             return getHeightRec(pNode->pRight) - getHeightRec(pNode->pLeft);
         }
+        bool isLessThan(const K &a, const K &b) {
+            int lenA = a.length();
+            int lenB = b.length();
+            int minLen = lenA < lenB ? lenA : lenB;
+
+            // So sánh từng ký tự tại các vị trí tương ứng trong chuỗi
+            for (int i = 0; i < minLen; ++i) {
+                if (a[i] < b[i]) return true;
+                else if (a[i] > b[i]) return false; 
+            }
+
+            // Nếu tất cả ký tự từ đầu đến minLen giống nhau, so sánh độ dài
+            return lenA < lenB;
+        }
 
         AVLNode* LLRotation(AVLNode* pNode){
             AVLNode* plNode = pNode->pLeft;
@@ -330,10 +347,10 @@ public:
                 return newNode;
             }
             
-            if(key < pNode->key){
+            if(isLessThan(key, pNode->key)){
                 pNode->pLeft = insertNode(pNode->pLeft, key, data);
             }
-            else if(key >= pNode->key){
+            else if(!isLessThan(key, pNode->key)){
                 pNode->pRight = insertNode(pNode->pRight, key, data);
             }
 
@@ -440,9 +457,14 @@ public:
 
         AVLNode* searchRec(AVLNode* pNode, K key){
             if (!pNode) return NULL;
-            else if (pNode->key == key) return pNode;
-            else if (pNode->key > key) return searchRec(pNode->pLeft, key);
-            else return searchRec(pNode->pRight, key);
+            if (pNode->key == key) return pNode;
+            if (pNode->key > key) return searchRec(pNode->pLeft, key);
+            return searchRec(pNode->pRight, key);
+        }
+
+        void updateData(const K &key , const T &newData){
+            AVLNode *temp = this->search(key);
+            temp->data = newData;
         }
 
         void destroyTree() {
@@ -457,27 +479,38 @@ public:
             pNode = NULL;
         }
 
-        AVLNode* searchParentRec(AVLNode* pNode, K key){
-            if (pNode == NULL) return NULL;
-            if (pNode->pLeft->key == key) {
-                return pNode;
-            }
-            else if(pNode->pRight->key == key){
-                return pNode;
-            }
-            else{
-                searchParentRec(pNode->pLeft, key);
-                searchParentRec(pNode->pRight, key);
-            }
-            return NULL;
-        }
-        AVLNode* searchParent(K key){
-            AVLNode* temp = searchParentRec(this->root, key);
-            if(!temp) return NULL;
-            std::cout << temp->key;
-            if (temp->key == key) return NULL;
-            return temp;
-        }
+AVLNode* searchParent(K key) {
+    if (this->root == nullptr || this->root->key == key) {
+        return nullptr; // Trường hợp root là NULL hoặc root chính là node cần tìm parent, không có parent
+    }
+
+    AVLNode* temp = searchParentRec(this->root, key);
+    if (temp == nullptr) return nullptr;
+
+    // std::cout << "Parent of node with key " << key << " is " << temp->key << std::endl;
+    return temp;
+}
+//
+        AVLNode* searchParentRec(AVLNode* pNode, K key) {
+    if (pNode == nullptr) return nullptr;
+
+    // Kiểm tra nếu một trong hai con của pNode có key bằng với giá trị cần tìm
+    if ((pNode->pLeft != nullptr && pNode->pLeft->key == key) ||
+        (pNode->pRight != nullptr && pNode->pRight->key == key)) {
+        return pNode;
+    }
+
+    // Duyệt cây con bên trái
+    AVLNode* leftSearch = searchParentRec(pNode->pLeft, key);
+    if (leftSearch != nullptr) {
+        return leftSearch;
+    }
+
+    // Duyệt cây con bên phải
+    return searchParentRec(pNode->pRight, key);
+}
+
+
 
         int countNodeRec(AVLNode* pNode){
             if (pNode == NULL)
@@ -486,9 +519,56 @@ public:
                 return 1 + countNodeRec(pNode->pLeft) + countNodeRec(pNode->pRight);
             }
         }
+        void preorderRec(AVLNode* root){
+            if (root == nullptr)
+                return;
+
+            // In giá trị của node hiện tại
+            std::cout << root->key << std::endl;
+
+            // Duyệt cây con trái
+            preorderRec(root->pLeft);
+
+            // Duyệt cây con phải
+            preorderRec(root->pRight);
+
+        }
+        void preorder(){
+            this->preorderRec(this->root);
+            std::cout << "\n";
+        }
         int getSize(){
             return countNodeRec(this->root);
         }
+        //! 
+void print2DUtil(AVLNode *root, int space)
+{
+    // Base case
+    if (root == NULL)
+        return;
+
+    // Increase distance between levels
+    space += 5;
+
+    // Process right child first
+    print2DUtil(root->pRight, space);
+
+    // Print current node after space
+    // count
+    std::cout << std::endl;
+    for (int i = 2; i < space; i++)
+        std::cout << " ";
+
+    std::cout << root->key << "\n";
+
+    // Process left child
+    print2DUtil(root->pLeft, space);
+}
+
+void print2D()
+{
+    print2DUtil(this->root, 0);
+}
 
         class AVLNode
         {
